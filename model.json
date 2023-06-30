@@ -1,0 +1,68 @@
+[
+  {
+    "action": "Um",
+    "down": [0, 1, 0, 0, 0],
+    "together": null,
+    "direction": ["Up", "Right", "Left", "Down"]
+  },
+  {
+    "action": "Dois",
+    "down": [0, 1, 1, 0, 0],
+    "together": null,
+    "direction": ["Up"]
+  },
+  {
+    "action": "Tres",
+    "down": [0, 1, 1, 1, 0],
+    "together": null,
+    "direction": ["Up", "Right", "Left", "Down"]
+  },
+  {
+    "action": "Quatro",
+    "down": [0, 1, 1, 1, 1],
+    "together": null,
+    "direction": ["Up", "Right", "Left", "Down"]
+  },
+  {
+    "action": "Cinco",
+    "down": [1, 1, 1, 1, 1],
+    "together": null,
+    "direction": ["Up", "Right", "Left", "Down"]
+  },
+  {
+    "action": "Legal",
+    "down": [1, 0, 0, 0, 0],
+    "together": null,
+    "direction": ["Left", "Right"]
+  },
+  {
+    "action": "Rock",
+    "down": [0, 1, 0, 0, 1],
+    "together": [1, 1, 0, 1],
+    "direction": ["Up", "Right", "Left", "Down"]
+  },
+  {
+    "action": "Rock",
+    "down": [0, 1, 0, 0, 1],
+    "together": [1, 1, 1, 1],
+    "direction": ["Left"]
+  },
+  {
+    "action": "OK!",
+    "down": [1, 0, 1, 1, 1],
+    "together": [0, 1, 1, 1],
+    "direction": ["Left"]
+  },
+  {
+    "action": "Start Trek",
+    "down": [1, 1, 1, 1, 1],
+    "together": [1, 0, 1, 0],
+    "direction": ["Up"]
+  },
+  {
+    "action": "Menu",
+    "down": [1, 1, 1, 1, 1],
+    "together": [1, 0, 0, 0],
+    "direction": ["Up"]
+  }
+]
