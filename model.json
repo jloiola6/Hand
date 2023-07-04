@@ -54,6 +54,12 @@
     "direction": ["Left"]
   },
   {
+    "action": "Pinça",
+    "down": [1, 0, 0, 0, 0],
+    "together": [0, 1, 1, 1],
+    "direction": ["Up", "Right", "Left", "Down"]
+  },
+  {
     "action": "Start Trek",
     "down": [1, 1, 1, 1, 1],
     "together": [1, 0, 1, 0],
