@@ -7,42 +7,60 @@ from time import sleep
 from pycaw.pycaw import AudioUtilities, ISimpleAudioVolume
 
 class Hand():
-    def __init__(self, frame, points, real_coordinates, details=None) -> None:
+    def __init__(self, frame, points, real_coordinates, previous_actions, details=None) -> None:
         try:
+            self.previous_actions = previous_actions
             self.details = details
-            self.hand = 1
-            qtd_hand = len(real_coordinates) > 21
-            for item in range(0, len(real_coordinates), 21):
+            self.hand = 2 if len(real_coordinates) > 21 else 1
+
+            self.directions = {
+                'Up': lambda: 'Frente' if real_coordinates[1][0] < real_coordinates[0][0] else 'Costa',
+                'Right': lambda: 'Frente' if real_coordinates[1][1] < real_coordinates[0][1] else 'Costa',
+                'Down': lambda: 'Frente' if real_coordinates[1][0] > real_coordinates[0][0] else 'Costa',
+                'Left': lambda: 'Frente' if real_coordinates[1][1] > real_coordinates[0][1] else 'Costa'
+            }
+
+            with open("sequence.json") as f:
+                self.sequence_data = json.load(f)
+
+            with open("model.json") as f:
+                self.data = json.load(f)
+            self.cache = {}
+
+
+            for item in range(0, len(real_coordinates), 42):
                 if self.hand == 1:
                     coordinates = real_coordinates[:21]
-                # else:
-                #     coordinates = real_coordinates[21:]
+                else:
+                    coordinates = real_coordinates[21:]
 
                 self.direction = self.calculate_direction(coordinates)
-                self.palm = self.calculate_palm(coordinates, self.direction)
+                self.palm = self.calculate_palm(self.direction)
                 self.down = self.calculate_isdown(coordinates, self.direction, self.palm)
                 self.together = self.calculate_together(coordinates)
                 self.action = self.calculate_gest(self.down, self.together, self.direction)
 
 
                 # Controlar pc futuramente
-                if self.action == 'OK!':
-                    self.controlMouse(frame, real_coordinates)
-                elif self.calculate_gest(self.down, self.together, self.direction) == 'Legal':
-                    pyautogui.click()
-                    sleep(0.5)
+                # if self.action == 'OK!':
+                #     self.controlMouse(frame, real_coordinates)
+                #     pyautogui.click()
+                # elif self.calculate_gest(self.down, self.together, self.direction) == 'OK!' and self.hand == 2:
+                #     pyautogui.click()
+                #     sleep(0.5)
 
                 # if True:
                 #     distance = round(math.dist(real_coordinates[4], real_coordinates[8]), 2) - 10
                 #     valor = (distance * 100) // 150
                 #     self.set_volume_percentage(valor)
-                    
 
-                if self.details != None:
+
+                if self.details.any():
                     self.debug()
 
-                # self.hand += 1
-        except:
+                self.hand += 1
+        except Exception as e:
+            print(f"ERROR -> {e}")
             pass
 
 
@@ -57,7 +75,7 @@ class Hand():
 
             self.action = self.calculate_gest(self.down, self.together, self.direction)
 
-            cv2.putText(self.details, f'Action: {self.action}', (30, 130), cv2.FONT_HERSHEY_PLAIN, 0.5, (255, 0, 0), 1)
+            cv2.putText(self.details, f'Action: {self.action}', (30, 130), cv2.FONT_HERSHEY_PLAIN, 0.5, (0, 0, 255), 1)
 
         elif self.hand == 2:
             cv2.putText(self.details, f'Mão {self.hand}', (30, 150), cv2.FONT_HERSHEY_PLAIN, 0.5, (0, 0, 255), 1)
@@ -68,65 +86,62 @@ class Hand():
 
             self.action = self.calculate_gest(self.down, self.together, self.direction)
 
-            cv2.putText(self.details, f'Action: {self.action}', (30, 225), cv2.FONT_HERSHEY_PLAIN, 0.5, (255, 0, 0), 1)
+            cv2.putText(self.details, f'Action: {self.action}', (30, 225), cv2.FONT_HERSHEY_PLAIN, 0.5, (0, 0, 255), 1)
 
 
-    def calculate_palm(self, real_coordinates, direction):
-        if direction == 'Up':
-            palm = 'Frente' if real_coordinates[1][0] < real_coordinates[0][0] else 'Costa'
-        elif direction == 'Right':
-            palm = 'Frente' if real_coordinates[1][1] < real_coordinates[0][1] else 'Costa'
-        elif direction == 'Down':
-            palm = 'Frente' if real_coordinates[1][0] > real_coordinates[0][0] else 'Costa'
-        elif direction == 'Left':
-            palm = 'Frente' if real_coordinates[1][1] > real_coordinates[0][1] else 'Costa'
-        else:
-            palm = 'ERROR!'
-
-        return palm
-
+    def calculate_palm(self, direction):
+        try:
+            return self.directions[direction]()
+        except:
+            raise ValueError(f"Direction '{direction}' is not recognized.")
 
     def calculate_together(self, real_coordinates):
-        distance_0 = round(math.dist(real_coordinates[4], real_coordinates[8]), 2)
-        distance_1 = round(math.dist(real_coordinates[8], real_coordinates[12]), 2)
-        distance_2 = round(math.dist(real_coordinates[12], real_coordinates[16]), 2)
-        distance_3 = round(math.dist(real_coordinates[16], real_coordinates[20]), 2)
+        together = []
+        thresholds = [25, 35, 22, 42]
 
-        together_0 = 1 if distance_0 > 25 else 0 # 1 significa que esta aberto e 0 fechado
-        together_1 = 1 if distance_1 > 35 else 0 # 1 significa que esta aberto e 0 fechado
-        together_2 = 1 if distance_2 > 22 else 0 # 1 significa que esta aberto e 0 fechado
-        together_3 = 1 if distance_3 > 42 else 0 # 1 significa que esta aberto e 0 fechado
+        for i in range(4):
+            distance = round(math.dist(real_coordinates[4 + i * 4], real_coordinates[8 + i * 4]), 2)
+            together.append(1 if distance > thresholds[i] else 0)  # 1 significa que esta aberto e 0 fechado
 
-        return [together_0, together_1, together_2, together_3]
+        return together
 
 
     def angle_between_points(self, coordinates):
-        x1 = coordinates[0][0]
-        y1 = coordinates[0][1]
-        x2 = coordinates[9][0]
-        y2 = coordinates[9][1]
+        # Verificar se as coordenadas são válidas
+        if not coordinates or len(coordinates) < 10:
+            raise ValueError("Invalid coordinates")
 
-        angle_rad = math.atan2(y2-y1, x2-x1)
+        # Obter as coordenadas x e y dos pontos
+        x1, y1 = coordinates[0][0], coordinates[0][1]
+        x2, y2 = coordinates[9][0], coordinates[9][1]
 
-        angle_deg = math.degrees(angle_rad) * -1
+        # Calcular o ângulo em radianos entre os dois pontos
+        angle_rad = math.atan2(y2 - y1, x2 - x1)
+
+        # Converter o ângulo para graus e inverter o sinal
+        angle_deg = -math.degrees(angle_rad)
 
         return angle_deg
 
 
     def calculate_direction(self, coordinates):
         angle_deg = self.angle_between_points(coordinates)
-        # return angle_deg
 
-        if 130 > angle_deg > 60:
-            return "Up"
-        elif 60 > angle_deg > -50:
-            return "Right"
-        elif -50 > angle_deg > -140:
-            return "Down"
-        elif -140 < angle_deg > 130:
-            return "Left"
-        else:
-            return "nenhuma das anteriores"
+        # Dicionário para mapear intervalos de ângulos para direções
+        directions = {
+            "Up": range(60, 131),
+            "Right": range(-50, 61),
+            "Down": range(-140, -49),
+            "Left": range(130, -141, -1)
+        }
+
+        # Verificar em qual intervalo o ângulo se encontra
+        for direction, angle_range in directions.items():
+            if int(angle_deg) in angle_range:
+                return direction
+
+        return "nenhuma das anteriores"
+
 
 
     def calculate_distance(self, real_coordinates, direction, palm):
@@ -182,28 +197,24 @@ class Hand():
 
 
     def calculate_isdown(self, real_coordinates, direction, palm):
-        distance_0, distance_1, distance_2, distance_3, distance_4 = self.calculate_distance(real_coordinates, direction, palm)
+        distances = self.calculate_distance(real_coordinates, direction, palm)
+        down = [1 if distance < 0 else 0 for distance in distances]  # 1 significa que esta esticado e 0 encolhido
+        if self.hand == 2:
+            down[0] = 0 if down[0] == 1 else 1
 
-        down_0 = 1 if distance_0 < 0 else 0  # 1 significa que esta esticado e 0 encolhido
-        down_1 = 1 if distance_1 < 0 else 0  # 1 significa que esta esticado e 0 encolhido
-        down_2 = 1 if distance_2 < 0 else 0  # 1 significa que esta esticado e 0 encolhido
-        down_3 = 1 if distance_3 < 0 else 0  # 1 significa que esta esticado e 0 encolhido
-        down_4 = 1 if distance_4 < 0 else 0  # 1 significa que esta esticado e 0 encolhido
-
-        # return [distance_0, distance_1, distance_2, distance_3, distance_4]
-        return [down_0, down_1, down_2, down_3, down_4]
-
+        return down
 
     def calculate_gest(self, down, together, direction):
-        with open("model.json") as f:
-            data = json.load(f)
+        cache_key = (tuple(down), tuple(together), direction)
+        if cache_key in self.cache:
+            return self.cache[cache_key]
 
         gests = []
         gests_1 = []
         gest_2 = []
         valor = '[]'
 
-        for i in data:
+        for i in self.data:
             if i['down'] == down:
                 gests.append(i)
 
@@ -243,7 +254,31 @@ class Hand():
 
                 valor = return_list
 
+        self.cache[cache_key] = valor
         return valor
+
+    def check_gesture_sequence(self):
+        # Verificar se a sequência de gestos ocorreu
+        if len(self.previous_actions) >= 2:
+            for i in self.sequence_data:
+                qtd = len(i["sequence"])
+                if self.previous_actions[-qtd:] == i["sequence"]:
+                    print(f"Sequence detected: {i['action']}")
+                    self.previous_actions = []
+                    return i['action']
+
+    def update(self):
+        try:
+            self.action = self.calculate_gest(self.down, self.together, self.direction)
+            if self.previous_actions:
+                if self.previous_actions[-1] != self.action:
+                    self.previous_actions.append(self.action)
+                    return self.check_gesture_sequence()
+            else:
+                self.previous_actions.append(self.action)
+        except Exception as e:
+            print(f"ERROR -> {e}")
+
 
 
     def controlMouse(self, frame, real_coordinates):

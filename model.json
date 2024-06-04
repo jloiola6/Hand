@@ -70,5 +70,119 @@
     "down": [1, 1, 1, 1, 1],
     "together": [1, 0, 0, 0],
     "direction": ["Up"]
+  },
+  {
+    "action": "A",
+    "down": [0, 0, 0, 0, 0],
+    "together": [0, 0, 0, 0],
+    "direction": ["Up"]
+  },
+   {
+    "action": "B",
+    "down": [0, 1, 1, 1, 1],
+    "together": null,
+    "direction": ["Up"]
+  },
+   {
+    "action": "C",
+    "down": [1, 0, 0, 0, 0],
+    "together": [1, 0, 0, 0],
+    "direction": ["Up"]
+  },
+  {
+    "action": "D",
+    "down": [1, 0, 1, 1, 1],
+    "together": [0, 1, 1, 1],
+    "direction": ["Left"]
+  },
+  {
+    "action": "E",
+    "down": [0, 0, 0, 0, 0],
+    "together": [0, 0, 0, 0],
+    "direction": ["Up"]
+  },
+  {
+    "action": "F",
+    "down": [1, 0, 1, 1, 1],
+    "together": [0, 1, 0, 0],
+    "direction": ["Up"]
+  },
+  {
+    "action": "G",
+    "down": [1, 1, 0, 0, 0],
+    "together": [1, 1, 0, 0],
+    "direction": ["Up"]
+  },
+  {
+    "action": "i",
+    "down": [0, 0, 0, 0, 1],
+    "together": [0, 0, 0, 1],
+    "direction": ["Up"]
+  },
+  {
+    "action": "L",
+    "down": [1, 1, 0, 0, 0],
+    "together": [1, 1, 0, 0],
+    "direction": ["Up"]
+  },
+  {
+    "action": "M",
+    "down": [0, 1, 1, 1, 1],
+    "together": null,
+    "direction": ["Down"]
+  },
+  {
+    "action": "N",
+    "down": [0, 1, 1, 0, 0],
+    "together": null,
+    "direction": ["Down"]
+  },
+  {
+    "action": "O",
+    "down": [1, 0, 0, 0, 0],
+    "together": [0, 0, 0, 0],
+    "direction": ["Up", "Right", "Left", "Down"]
+  },
+  {
+    "action": "P",
+    "down": [1, 1, 0, 0, 0],
+    "together": [0, 1, 1, 0],
+    "direction": ["Up"]
+  },
+  {
+    "action": "Q",
+    "down": [1, 1, 0, 0, 0],
+    "together": [1, 1, 0, 0],
+    "direction": ["Down"]
+  },
+  {
+    "action": "R",
+    "down": [0, 1, 1, 0, 0],
+    "together": null,
+    "direction": ["Up"]
+  },
+  {
+    "action": "S",
+    "down": [0, 0, 0, 0, 0],
+    "together": [0, 0, 0, 0],
+    "direction": ["Up"]
+  },
+  {
+    "action": "T",
+    "down": [0, 0, 1, 1, 1],
+    "together": [0, 1, 0, 0],
+    "direction": ["Up"]
+  },
+  {
+    "action": "U",
+    "down": [0, 1, 1, 0, 0],
+    "together": null,
+    "direction": ["Up"]
+  },
+  {
+    "action": "W",
+    "down": [0, 1, 1, 1, 0],
+    "together": null,
+    "direction": ["Up", "Right", "Left", "Down"]
   }
 ]

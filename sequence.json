@@ -1,0 +1,10 @@
+[
+  {
+    "action": "Contagem",
+    "sequence": ["Um", "Dois", "Tres", "Quatro"]
+  },
+  {
+    "action": "Click",
+    "sequence": ["OK!", "Cinco", "OK!"]
+  }
+]
