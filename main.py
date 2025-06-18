@@ -25,7 +25,7 @@ while True:
     debug = True
     # Read each frame from the webcam
     _, frame = cap.read()
-    x, y, c = frame.shape
+    h, w, c = frame.shape
 
     frame = cv2.flip(frame, 1)
 
@@ -74,8 +74,8 @@ while True:
         real_coordinates = []
         for handslms in result.multi_hand_landmarks:
             for lm in handslms.landmark:
-                lmx = int(lm.x * x)
-                lmy = int(lm.y * y)
+                lmx = int(lm.x * w)
+                lmy = int(lm.y * h)
                 lmz = float(lm.z)
                 landmarks.append([lmx, lmy])
                 real_coordinates.append((lmx, lmy, lmz))

@@ -11,6 +11,7 @@ class Hand():
         try:
             self.previous_actions = previous_actions
             self.details = details
+            # total number of hands detected based on landmark count
             self.hand = 2 if len(real_coordinates) > 21 else 1
 
             self.directions = {
@@ -28,11 +29,10 @@ class Hand():
             self.cache = {}
 
 
-            for item in range(0, len(real_coordinates), 42):
-                if self.hand == 1:
-                    coordinates = real_coordinates[:21]
-                else:
-                    coordinates = real_coordinates[21:]
+            for item in range(0, len(real_coordinates), 21):
+                # slice the landmarks for each detected hand
+                coordinates = real_coordinates[item:item + 21]
+                self.hand = item // 21 + 1
 
                 self.direction = self.calculate_direction(coordinates)
                 self.palm = self.calculate_palm(self.direction)
@@ -55,8 +55,13 @@ class Hand():
                 #     self.set_volume_percentage(valor)
 
 
-                if self.details.any():
-                    self.debug()
+                if self.details is not None:
+                    # ensure debug data is drawn only when a debug frame is provided
+                    if hasattr(self.details, "any"):
+                        if self.details.any():
+                            self.debug()
+                    else:
+                        self.debug()
 
                 self.hand += 1
         except Exception as e:
